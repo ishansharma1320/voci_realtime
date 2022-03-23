@@ -1,5 +1,7 @@
-import urlparse
-import httplib
+# import urlparse
+from urllib.parse import urlparse
+# import httplib
+import http.client as httplib
 import json
 from datetime import datetime, date
 dt=datetime.fromtimestamp(1635140783).isoformat()
@@ -113,6 +115,7 @@ example_content={
   'emotion': 'Neutral',
   'X-STT-ID': '6a56e6cfa3d3bf694be4dd0931bf8443@0.0.0.0',
   'gender': "",
+  'agentId': 'Ishan',
   'localparty': '+18554344553',
   'contact_number': '+18554344554',
   'sentiment': "",
@@ -128,68 +131,102 @@ example_content={
   'engagementStartTime': '1566591967',
   'streamStartTime': dt,
   'type': 'utterance',
-  'remoteparty': '333333332777', #'+14125521507',
+  'remoteparty': '3333333327799', #'+14125521507',
+  'completed' : False,
+  'isFinal' : True
+}
+example_content2={
+  'emotion': 'Neutral',
+  'X-STT-ID': '6a56e6cfa3d3bf694be4dd0931bf8443@0.0.0.0',
+  'gender': "",
+  'localparty': '+18554344553',
+  'contact_number': '+18554344554',
+  'sentiment': "",
+  'speaker': 'Agent',
+  'text': 'Your Welcome' ,
+  'utterance': 'Your Welcome',
+  'hostName': 'localhost.localdomain',
+  'direction': 'in',
+  'NativeCallId': '9ff04ca-1429d554-4067d-7f5d5696e990-140224ac-13b2-759',
+  'messageStartTime': 67.86,
+  'ucid': 'Vi',
+  'messageEndTime': 70.86,
+  'engagementStartTime': '1566591967',
+  'streamStartTime': dt,
+  'type': 'utterance',
+  'remoteparty': '3333333327799', #'+14125521507',
   'completed' : False,
   'isFinal' : True
 }
 
-
 def send(url, apiToken, content):
-    pUrl = urlparse.urlparse(url)
+    pUrl = urlparse(url)
     headers = {'Content-Type': 'application/json', 'X-API-Token': apiToken}
     conn = httplib.HTTPConnection(pUrl.netloc)  # use HTTPConnection if pUrl.scheme=='http'
     conn.request('POST', pUrl.path, json.dumps(content), headers)
     resp = conn.getresponse()
-    if resp.status != 200: print 'Something went wrong'
+    if resp.status != 200: print('Something went wrong')
 
-send('http://71.19.240.131:9002/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', example_content)
+# send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', example_content2)
+
 # def processSampleScript(script):
-#   for i in range(len(script)):
-#     sc = script[i]
-#     order = sc.get('order','')
-#     if order != '' and order == 'ca':
-#       cus_content = example_content
-#       cus_content['speaker'] = "Customer"
-#       customerObj = sc.get("Customer",{})
-#       cus_content['text'] = customerObj.get('text','')
-#       cus_content['utterance'] = customerObj.get('text','')
-#       cus_content['messageStartTime'] = customerObj.get('start_time',0.00)
-#       cus_content['messageEndTime'] = customerObj.get('end_time',1.00)
-#       cus_content['isFinal'] = False
-#       send('http://71.19.240.131:9002/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
-#       agt_content = example_content
-#       agt_content['speaker'] = "Agent"
-#       agentObj = sc.get("Agent",{})
-#       agt_content['text'] = agentObj.get('text','')
-#       agt_content['utterance'] = agentObj.get('text','')
-#       agt_content['messageStartTime'] = agentObj.get('start_time',0.00)
-#       agt_content['messageEndTime'] = agentObj.get('end_time',1.00)
-#       if i == len(script)-1:
-#         agt_content['isFinal'] = True
-#       else:
-#         agt_content['isFinal'] = False
-#       send('http://71.19.240.131:9002/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
-#     elif order != '' and order == 'ac':
-#       agt_content = example_content
-#       agt_content['speaker'] = "Agent"
-#       agentObj = sc.get("Agent",{})
-#       agt_content['text'] = agentObj.get('text','')
-#       agt_content['utterance'] = agentObj.get('text','')
-#       agt_content['messageStartTime'] = agentObj.get('start_time',0.00)
-#       agt_content['messageEndTime'] = agentObj.get('end_time',1.00)
-#       send('http://71.19.240.131:9002/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
-#       cus_content = example_content
-#       cus_content['speaker'] = "Customer"
-#       customerObj = sc.get("Customer",{})
-#       cus_content['text'] = customerObj.get('text','')
-#       cus_content['utterance'] = customerObj.get('text','')
-#       cus_content['messageStartTime'] = customerObj.get('start_time',0.00)
-#       cus_content['messageEndTime'] = customerObj.get('end_time',1.00)
-#       if i == len(script)-1:
-#         cus_content['isFinal'] = True
-#       else:
-#         cus_content['isFinal'] = False
-#       send('http://71.19.240.131:9002/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
-
-# if __name__ == '__main__':
-#   processSampleScript(transcript)
+  
+if __name__ == '__main__':
+  # processSampleScript(transcript)
+  d = []
+  for i in range(len(transcript)):
+    sc = transcript[i]
+    # print(sc)
+    order = sc.get('order','')
+    if order == 'ca':
+      cus_content = example_content.copy()
+      cus_content['speaker'] = "Customer"
+      customerObj = sc.get("Customer",{})
+      cus_content['text'] = customerObj.get('text','')
+      cus_content['utterance'] = customerObj.get('text','')
+      cus_content['messageStartTime'] = customerObj.get('start_time',0.00)
+      cus_content['messageEndTime'] = customerObj.get('end_time',1.00)
+      cus_content['isFinal'] = False
+      print(cus_content)
+      d.append({"native": example_content,"generated": cus_content})
+      send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
+      agt_content = example_content.copy()
+      agt_content['speaker'] = "Agent"
+      agentObj = sc.get("Agent",{})
+      agt_content['text'] = agentObj.get('text','')
+      agt_content['utterance'] = agentObj.get('text','')
+      agt_content['messageStartTime'] = agentObj.get('start_time',0.00)
+      agt_content['messageEndTime'] = agentObj.get('end_time',1.00)
+      if i == len(transcript)-1:
+        agt_content['isFinal'] = True
+      else:
+        agt_content['isFinal'] = False
+      d.append({"native": example_content,"generated": agt_content})
+      send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
+    elif order == 'ac':
+      agt_content = example_content.copy()
+      agt_content['speaker'] = "Agent"
+      agentObj = sc.get("Agent",{})
+      agt_content['text'] = agentObj.get('text','')
+      agt_content['utterance'] = agentObj.get('text','')
+      agt_content['messageStartTime'] = agentObj.get('start_time',0.00)
+      agt_content['messageEndTime'] = agentObj.get('end_time',1.00)
+      d.append({"native": example_content,"generated": agt_content})
+      send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
+      cus_content = example_content.copy()
+      cus_content['speaker'] = "Customer"
+      customerObj = sc.get("Customer",{})
+      cus_content['text'] = customerObj.get('text','')
+      cus_content['utterance'] = customerObj.get('text','')
+      cus_content['messageStartTime'] = customerObj.get('start_time',0.00)
+      cus_content['messageEndTime'] = customerObj.get('end_time',1.00)
+      if i == len(transcript)-1:
+        cus_content['isFinal'] = True
+      else:
+        cus_content['isFinal'] = False
+      d.append({"native": example_content,"generated": cus_content})
+      send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
+  # print(*d,sep='\n')
+  # with open('./comp.json','w') as f:
+  #   import json
+  #   f.write(json.dumps({'data':d}))

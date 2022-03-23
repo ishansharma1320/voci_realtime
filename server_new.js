@@ -2,11 +2,12 @@
 const express = require('express');
 const bodyParser = require("body-parser")
 const app = express();
-const PORT = 9002;
+const PORT = 3003;
 app.use(bodyParser.json())
 
 var io = require('socket.io-client');
-var socket = io.connect('http://71.19.240.131:3004', {reconnect: true});
+
+var socket = io.connect('http://13.127.219.224:3002', {reconnect: true});
 
 // Add a connect listener
 socket.on('connect', function (sockets) {
