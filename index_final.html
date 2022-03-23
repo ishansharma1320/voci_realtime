@@ -1,0 +1,288 @@
+
+<!DOCTYPE html><html class=''>
+<head>
+<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css'>
+<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css'>
+<link rel="stylesheet" href="css/style-uop_b4.css">
+<link rel="stylesheet" href="css/circle.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src='http://13.127.219.224:3002/socket.io/socket.io.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="css/style.css">
+        <script>
+            var socket = io();
+            var strem_list = [];
+            var selected_id = "";
+            var recent_data = {}; 
+	    //var url = new URL(url_string);
+	    //console.log("url : ",url)
+	    //var accountId = url.searchParams.get("accountId");
+	    //console.log("accountId : "+accountId);
+            socket.on('datavalues', function(vall) {
+                if(vall.new_utterance){
+                        if(vall.speaker == 'Customer'){
+				$('#id_'+(vall.contact_number).replace(/[^a-zA-Z0-9]/g, "")).append('<li class="replies" style="float: right;"><p class="replies" style="background-color: cornsilk;">'+ vall.new_utterance +'</p></li>');
+                                $('#messages').scrollTop($('#messages')[0].scrollHeight);
+			}else{ 
+                        	$('#id_'+(vall.contact_number).replace(/[^a-zA-Z0-9]/g, "")).append('<li class="replies"><p class="replies">'+ vall.new_utterance +'</p></li>');
+                        	$('#messages').scrollTop($('#messages')[0].scrollHeight);
+			}
+                }
+            });
+        
+            socket.on('removeID', function(data) {
+			console.log("removeID : "+ JSON.stringify(data))
+                        var old_data = document.getElementById("div_id_"+data.contact);
+                        if(old_data){
+                              document.getElementById("div_id_"+data.contact).remove();
+                        }
+            })
+
+            socket.on('streamArray', function(data) {
+                console.log("data : "+JSON.stringify(data));
+	        recent_data = data;
+                $('.username').remove();
+                $('.div_username').remove();
+                strem_list = data.stream;
+                if(strem_list.length == 0){
+                        $('*[id^="id"]').css("display","none");
+                        //$('*[id^="div_"]').css("display","none");
+                        $('*[id*=div_id]').remove();
+                }
+
+                var list_Of_contacts = data.list_Of_contacts;
+                var list =  data.list_Of_contacts.filter(function (el) {
+					  return el != null;
+					});//.stream;//['Stream1', 'Stream2'];
+                var listOfStrem = data.stream;
+                if(list.length == 0){
+                        $('.text_username').remove();
+			document.getElementById('profile_selected').innerHTML = "No active call "
+			document.getElementById('activeC_calls_count').innerHTML = "0 Active calls";
+                }else{
+			document.getElementById('activeC_calls_count').innerHTML = list.length + "  Active calls";	
+		}
+                console.log("selected_id : "+selected_id)
+		//setPharsesDetectedCount(selected_id, data);
+                for (i = 0; i < list.length; i++) {
+                    if(list[i]){
+                        console.log(list[i])
+                        var agentId = list[i].agentId; 
+                        var name = list[i].contact;
+                        var ids = "'id_"+list[i].contact+"'";
+                        var a_id = "'a_id_"+list[i].contact+"'";
+                        var div_id = "'div_id_"+list[i].contact+"'";
+                        var old_data = document.getElementById("div_id_"+list[i].contact);
+                        if(old_data){
+                                console.log("i#################### : old_data : "+old_data);
+				console.log(old_data)
+				old_data.parentNode.removeChild(old_data)
+                                //document.getElementById("div_id_"+list[i].contact).remove();
+                        }
+                        var phrase_status = getPharseStatus(list_Of_contacts, name);
+                        //console.log(list_Of_contacts);
+                        var width = (list[i].phrases_count / list[0].phrases_count) * 100;
+                        //console.log("width : "+width)
+                        if(phrase_status.phrases_status == true){
+				$("#sidenav").append('<li class="contact" id='+div_id+' class="div_username" onclick="show('+ids+');"><div class="wrap"><i class="fa fa-flag" style="color: red; font-size: 18px;" aria-hidden="true"></i><div class="meta" id='+a_id+' class="username"><p class="name">'+ agentId +'</p><p class="preview"></p></div><span> '+phrase_status.phrases_count+' </span></div></li>')
+                                //$("div#sidenav").append('<div class="w3-light-grey" id='+div_id+' class="div_username"><a href="#" id='+a_id+' class="username" onclick="show('+ids+');"><span style="color: red;">&#9873;</span>  '+ name +' <span class="step">'+phrase_status.phrases_count+'</span> </a> <div class="w3-green" style="height:5px; width: '+width+'%"></div><div>');
+                        }else{
+				$("#sidenav").append('<li class="contact" id='+div_id+' class="div_username" onclick="show('+ids+');"><div class="wrap"><i class="fa" aria-hidden="true"></i><div class="meta" id='+a_id+' class="username"><p class="name">'+ agentId +'</p><p class="preview"></p></div><span> '+phrase_status.phrases_count+' </span></div></li>')
+                                //$("div#sidenav").append('<div class="w3-light-grey" id='+div_id+' class="div_username"><a href="#" id='+a_id+' class="username" onclick="show('+ids+');">'+ name +'<span class="step">'+phrase_status.phrases_count+'</span></a> <div class="w3-green" style="height:5px; width: '+width+'%"></div><div>');
+                        }
+                        //$("#sidenav").append('<li class="contact" id='+div_id+' class="div_username"><div class="wrap"><i class="fa fa-flag" style="color: red" aria-hidden="true"></i><div class="meta" id='+a_id+' class="username" onclick="show('+ids+');"><p class="name">'+ name +'</p><p class="preview"></p></div><span> '+phrase_status.phrases_count+' </span></div></li>')
+                        var checkID = document.getElementById("id_"+list[i].contact);
+                        if(i == 0){             
+                                if(checkID === null){ $("div#maind").append('<ul class="text_username" id='+ids+' style="display: block;">'); }
+                        }else{
+                                if(checkID === null){ $("div#maind").append('<ul class="text_username" id='+ids+' style="display: none;">'); }
+                        }
+                        
+                        //console.log("i : "+i +"   : "+list.length)
+                        if(i == list.length-1){
+                        console.log("listOfStrem : "+listOfStrem)
+                        if(selected_id == "" || listOfStrem.indexOf(selected_id.replace("id_","")) == -1){
+                                console.log("RRRRR : in if condition for id  : "+selected_id)
+                                selected_id = "id_"+list[0].contact;
+                                var a = "div_"+selected_id;
+                                $('*[id^="id"]').css("display","none");
+                                document.getElementById(selected_id).style.display="block"
+                                //console.log("document.getElementById(a) : "+document.getElementById(a));
+				document.getElementById('profile_selected').innerHTML = formtNumber(selected_id.replace("id_",""));
+                                document.getElementById(a).classList.add("active");   
+                
+                        }else{
+                                //console.log("in else condition for id  : "+selected_id);
+                                var a = "div_"+selected_id;
+                                //console.log("AAAA : "+a)
+                                $('*[id^="id"]').css("display","none");
+                                document.getElementById(selected_id).style.display="block"
+				document.getElementById('profile_selected').innerHTML = formtNumber(selected_id.replace("id_",""));
+                                document.getElementById(a).classList.add("active");                           
+                        }
+                        }else{
+                                console.log("wait")     
+                        }
+                    }else{
+                        if(selected_id == "" || listOfStrem.indexOf(selected_id.replace("id_","")) == -1){
+                                //console.log("in if condition for id  : "+list[i])
+                                selected_id = "id_"+list[0].contact;
+                                var a = "div_"+selected_id;
+                                $('*[id^="id"]').css("display","none");
+                                document.getElementById(selected_id).style.display="block"
+                                //console.log("document.getElementById(a) : "+document.getElementById(a));
+				document.getElementById('profile_selected').innerHTML = formtNumber(selected_id.replace("id_",""));
+                                document.getElementById(a).classList.add("active"); 
+                       }else{
+                                //console.log("in else condition for id  : "+selected_id);
+                                var a = "div_"+selected_id;
+                                //console.log("AAAA : "+a)
+                                $('*[id^="id"]').css("display","none");
+                                document.getElementById(selected_id).style.display="block"
+				document.getElementById('profile_selected').innerHTML = formtNumber(selected_id.replace("id_",""));
+                                document.getElementById(a).classList.add("active");                           
+                        }
+
+                    }
+                }
+                  setPharsesDetectedCount(selected_id, data);      
+           });
+
+        function getPharseStatus(data, name){
+                //console.log("data : "+JSON.stringify(data))
+                console.log("name : "+name)
+                return data.filter(
+                        function(data){
+                                if(data){
+                                        return data.contact == name;
+                                }
+                        }
+                )[0];
+        }
+
+        function show(elementId) {
+		setPharsesDetectedCount(elementId,recent_data);
+                console.log("elementId onclick: "+elementId)
+                selected_id = elementId; 
+                $('*[id^="id"]').css("display","none");
+		document.getElementById('profile_selected').innerHTML = "";
+                $('*[id^="div_id"]').removeClass('active');
+                //console.log("elementId : "+elementId)
+		document.getElementById('profile_selected').innerHTML = formtNumber(selected_id.replace("id_",""));
+                document.getElementById("div_"+elementId).classList.add("active");              
+                document.getElementById(elementId).style.display="block";
+        }       
+
+	function setPharsesDetectedCount(selected_id, data){
+		console.log("RRR111 : "+selected_id);
+		console.log("RRR222 : "+JSON.stringify(data))
+		var list = data.list_Of_contacts.filter(function (el) {
+					  return el != null;
+					});
+	        if(list.length > 0){
+		console.log("in if condition")
+		for (i = 0; i < list.length; i++) {
+			selected_id = (selected_id) ? selected_id : "id_"+list[0].contact
+			if(list[i].contact === selected_id.replace("id_","")){
+				//var width = (list[i].phrases_count / list[0].phrases_count) * 100;
+				//$('#graph')[0].className = $('#graph')[0].className.replace(/\p.*?\b/g, '');
+				//document.getElementById('graph_data').innerHTML = width.toFixed(2);
+				document.getElementById('phrase_detected').innerHTML = list[i].phrases_count;
+				//var element = document.getElementById("graph");
+				//element.classList.add("p"+parseInt(width));
+			}
+		}	
+		}
+        else{
+			console.log("in else condition")
+			document.getElementById('phrase_detected').innerHTML = 0;
+			console.log($('#graph')[0])
+			//$('#graph')[0].className = $('#graph')[0].className.replace(/\p.*?\b/g, '');
+			//var element = document.getElementById("graph");
+  			//element.classList.remove("p*");
+			//document.getElementById('graph_data').innerHTML = 0;
+			//element.classList.add("p0");
+		}		
+	}
+
+        function formtNumber(text) {
+		console.log("text : "+text.length)
+		if(text.length == 10){
+        		text = text.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+        		return text;
+		}else if(text.length == 11){
+                        text = text.replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, "+$1 $2-$3-$4");
+                        return text;
+                }else if(text.length == 12){
+			text = text.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, "+$1 $2-$3-$4");
+			return text;
+		}else{
+			return text;
+		}
+    	};
+
+	</script>
+</head>
+<body>
+
+<!--div  class="container-fluid" style="height: 80%; margin-top: 5%; padding: 0px 25px 5px;">
+<div class="row"-->
+<div id="frame">
+	<div id="sidepanel">
+		<div id="profile">
+			<i class="fa fa-phone" aria-hidden="true"></i> <span style="margin-left: 20px;" id="activeC_calls_count"></span>
+		</div>
+		<div id="search">
+		</div>
+		<div id="contacts">
+			<ul id="sidenav" >
+			</ul>
+		</div>
+	</div>
+	<div class="content">
+		<div class="contact-profile"> 
+			<i class="fa fa-phone" aria-hidden="true"></i>
+			<p id="profile_selected" class="phone"></p>
+		        	<div class="social-media" style="width: 30%; position: inherit;">
+					<p style="margin-right: 30px;">Phrase Detected : </p> <p id= "phrase_detected" style=""></p>
+				</div>	
+		</div>
+		<div class="messages" id="messages">
+			<div class="maind call-chat" id="maind"></div>
+		</div>
+	</div>
+</div>
+<!--/div>
+</div-->
+
+
+<!--div id="frame">
+	<div id="sidepanel">
+		<div id="profile">
+		</div>
+		<div id="search">
+		</div>
+		<div id="contacts">
+			<ul id="sidenav" >
+			</ul>
+		</div>
+		<div id="bottom-bar">
+			<button><i class="fa fa-phone" aria-hidden="true"></i> <span id="activeC_calls_count"></span></button>
+		</div>
+	</div>
+	<div class="content">
+		<div class="contact-profile">
+			<i class="fa fa-phone" aria-hidden="true"></i>
+			<p id="profile_selected" class="phone"></p>
+		        	<div class="social-media" style="width: 30%; position: inherit;">
+					<p style="margin-right: 30px;">Phrase Detected : </p> <p id= "phrase_detected" style=""></p>
+				</div>	
+		</div>
+		<div class="messages" id="messages">
+			<div class="maind call-chat" id="maind"></div>
+		</div>
+	</div>
+</div-->
+
+</body></html>

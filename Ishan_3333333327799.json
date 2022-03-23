@@ -1,0 +1,161 @@
+{
+  "account_id": "realtime",
+  "user_name": "realtime",
+  "user_email": "realtime@yactraq.com",
+  "call_id": "3333333327799",
+  "agent_name": "Ishan",
+  "start_at": "2022-03-23T06:35:29.426Z",
+  "riskFlag": "Non-Compliant",
+  "total_time": 0,
+  "transcript": [
+    {
+      "utterance": "Hello, is it first national bank?",
+      "speaker": "right",
+      "startTime": 0,
+      "start_at": "2022-03-23T06:35:29.426Z"
+    },
+    {
+      "utterance": "Hi, My name is Bob, How can i help you?",
+      "speaker": "left",
+      "startTime": 0.008,
+      "start_at": "2022-03-23T06:35:29.434Z"
+    },
+    {
+      "utterance": "I am trying to do a payment using your credit card but somehow it's not being processed properly. The amount has deducted, however the transaction has failed on the XYZ website.",
+      "speaker": "right",
+      "startTime": 0.015,
+      "start_at": "2022-03-23T06:35:29.441Z"
+    },
+    {
+      "utterance": "Please wait till I get your recent transactions.",
+      "speaker": "left",
+      "startTime": 0.023,
+      "start_at": "2022-03-23T06:35:29.449Z"
+    },
+    {
+      "utterance": "Sure, I'll wait",
+      "speaker": "right",
+      "startTime": 0.027,
+      "start_at": "2022-03-23T06:35:29.453Z"
+    },
+    {
+      "utterance": "Thank you.",
+      "speaker": "left",
+      "startTime": 0.029,
+      "start_at": "2022-03-23T06:35:29.455Z"
+    },
+    {
+      "utterance": "Thank you for waiting, I am able to see that you attempted a transaction on XYZ Co. Ltd. on Tuesday, 22nd March, 4:41 PM. Is this the transaction you are mentioning?",
+      "speaker": "left",
+      "startTime": 0.033,
+      "start_at": "2022-03-23T06:35:29.459Z"
+    },
+    {
+      "utterance": "Yes, that's the one, I wanted to know, when can I expect the money to be credited back?",
+      "speaker": "right",
+      "startTime": 0.041,
+      "start_at": "2022-03-23T06:35:29.467Z"
+    },
+    {
+      "utterance": "It usually depends on the vendor, but on an average, you should see the amount credited in your account within 2-3 business days.",
+      "speaker": "left",
+      "startTime": 0.048,
+      "start_at": "2022-03-23T06:35:29.474Z"
+    },
+    {
+      "utterance": "Thanks, that's all I wanted to know.",
+      "speaker": "right",
+      "startTime": 0.056,
+      "start_at": "2022-03-23T06:35:29.482Z"
+    },
+    {
+      "utterance": "Is there anything else that I can help you with today?",
+      "speaker": "left",
+      "startTime": 0.06,
+      "start_at": "2022-03-23T06:35:29.486Z"
+    },
+    {
+      "utterance": "Nope, I have my doubt resolved, thanks",
+      "speaker": "right",
+      "startTime": 0.064,
+      "start_at": "2022-03-23T06:35:29.490Z"
+    },
+    {
+      "utterance": "Great, thank you for your time and have a nice day.",
+      "speaker": "left",
+      "startTime": 0.066,
+      "start_at": "2022-03-23T06:35:29.492Z"
+    },
+    {
+      "utterance": "Thanks, same to you.",
+      "speaker": "right",
+      "startTime": 0.073,
+      "start_at": "2022-03-23T06:35:29.499Z"
+    }
+  ],
+  "present_phrases": [
+    {
+      "speaker": "right",
+      "category": "Customer Introducing themself",
+      "phrasesType": "Customer Service",
+      "agent": false,
+      "startTime": 1566591967000,
+      "riskFlag": "Non-Compliant",
+      "phrase": "Hello"
+    },
+    {
+      "speaker": "right",
+      "category": "Customer Introducing themself",
+      "phrasesType": "Customer Service",
+      "agent": false,
+      "startTime": 1566591967000,
+      "riskFlag": "Non-Compliant",
+      "phrase": "Hello, is it first national bank"
+    },
+    {
+      "speaker": "right",
+      "category": "Transaction Failed",
+      "phrasesType": "Customer Service",
+      "agent": false,
+      "startTime": 1566591967000,
+      "riskFlag": "Non-Compliant",
+      "phrase": "transaction has failed"
+    },
+    {
+      "speaker": "right",
+      "category": "Transaction Failed",
+      "phrasesType": "Customer Service",
+      "agent": false,
+      "startTime": 1566591967000,
+      "riskFlag": "Non-Compliant",
+      "phrase": "amount has deducted"
+    },
+    {
+      "speaker": "right",
+      "category": "Credit Card",
+      "phrasesType": "Customer Service",
+      "agent": false,
+      "startTime": 1566591967000,
+      "riskFlag": "Non-Compliant",
+      "phrase": "credit card"
+    },
+    {
+      "speaker": "right",
+      "category": "Transaction Failed",
+      "phrasesType": "Customer Service",
+      "agent": false,
+      "startTime": 1566591967000,
+      "riskFlag": "Non-Compliant",
+      "phrase": "credited back"
+    },
+    {
+      "speaker": "right",
+      "category": "Customer Satisfaction",
+      "phrasesType": "Customer Service",
+      "agent": false,
+      "startTime": 1566591967000,
+      "riskFlag": "Non-Compliant",
+      "phrase": "doubt resolved"
+    }
+  ]
+}
