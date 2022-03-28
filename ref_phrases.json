@@ -31,6 +31,36 @@
         "__v": 0
       },
       {
+        "created_time": "2018-05-03T09:14:21.144Z",
+        "_id": "5cc98415d80f33e882bde97h",
+        "category": "Customer Introducing themself",
+        "phrases": "Hello, is it",
+        "phrasesType": "Customer Service",
+        "speaker": "right",
+        "account_id": "trialDemo",
+        "__v": 0
+      },
+      {
+        "created_time": "2018-05-03T09:14:21.144Z",
+        "_id": "5cc98415d80f33e882bde97h",
+        "category": "Customer Introducing themself",
+        "phrases": "payment",
+        "phrasesType": "Customer Service",
+        "speaker": "right",
+        "account_id": "trialDemo",
+        "__v": 0
+      },
+      {
+        "created_time": "2018-05-03T09:14:21.144Z",
+        "_id": "5cc98415d80f33e882bde97h",
+        "category": "Customer Introducing themself",
+        "phrases": "somehow",
+        "phrasesType": "Customer Service",
+        "speaker": "right",
+        "account_id": "trialDemo",
+        "__v": 0
+      },
+      {
         "created_time": "2018-05-03T09:13:22.144Z",
         "_id": "5cc98415d80f33e882bde97i",
         "category": "Customer Introducing themself",

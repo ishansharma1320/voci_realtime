@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+const process = require('process');
 var app = express();
 var http = require('http').Server(app);
 const mongoose = require('mongoose');
@@ -95,7 +96,7 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
            //var gen_phrases_data = (u.speaker == 'Customer') ? gen_phrases_customer : gen_phrases_agent;
                        JSON.parse(gen_phrases_data).data.map(function(dd_data){
                                if(new RegExp("\\b" + dd_data.phrases + "\\b").test(u.utterance) && u.speaker == 'Customer' && dd_data.speaker == 'right'){ //dd_data.speaker){
-                                //        console.log(u.utterance)
+                              
                                        list_of_phrases_occured.push(dd_data.phrases);
                                        var s_time =  (new Date(u.streamStartTime)).getTime()
                                        present_phrases_occured.push({
@@ -106,26 +107,27 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                                                'startTime': s_time,
                                                'riskFlag' : "Non-Compliant",
                                                'phrase' : dd_data.phrases
+                                              
                                        })
                                }
                        })
                 //        console.log(present_phrases_occured);
            //--console.log("socketID : "+socketID+"    : "+contact_number)
                        if(u.status == false && !socketID.includes(contact_number)){
-               console.log("okkk")
-                               socketID.push(contact_number);
-               var phrases_status = (list_of_phrases_occured.length > 0) ? true : false;
-               var phrases_count = (list_of_phrases_occured.length > 0) ?  list_of_phrases_occured.length : 0;
-               contact_JsonArray.push({'agentId':u.agentId,'contact':contact_number, 'phrases_status': phrases_status, 'phrases_count': phrases_count});
-               contact_JsonArray.sort(function(a,b){ return b.phrases_count - a.phrases_count; });
+                                console.log("okkk")
+                                socketID.push(contact_number);
+                                var phrases_status = (list_of_phrases_occured.length > 0) ? true : false;
+                                var phrases_count = (list_of_phrases_occured.length > 0) ?  list_of_phrases_occured.length : 0;
+                                contact_JsonArray.push({'agentId':u.agentId,'contact':contact_number, 'phrases_status': phrases_status, 'phrases_count': phrases_count});
+                                contact_JsonArray.sort(function(a,b){ return b.phrases_count - a.phrases_count; });
                                io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray});
                        }
                        else if(u.status == false && socketID.includes(contact_number)){
-               setPhraseStatus(contact_number, contact_JsonArray, list_of_phrases_occured.length);
-               contact_JsonArray.sort(function(a,b){ return b.phrases_count - a.phrases_count; });
-               //console.log("contact_JsonArray : "+JSON.stringify(contact_JsonArray))				
-               io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray});	
-           }
+                                setPhraseStatus(contact_number, contact_JsonArray, list_of_phrases_occured.length);
+                                contact_JsonArray.sort(function(a,b){ return b.phrases_count - a.phrases_count; });
+                                //console.log("contact_JsonArray : "+JSON.stringify(contact_JsonArray))				
+                                io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray});	
+                        }
 
            function setPhraseStatus(contact_number, contact_JsonArray, size) {
              for (var i = 0; i < contact_JsonArray.length; i++) {
@@ -166,62 +168,65 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                    var time = new Date()//.toISOString()
                    //console.log("time : "+time)
                    var speaker = (u.speaker == 'Customer') ? 'right': 'left'
-                                       var file_data = {
-                                               "account_id" : "realtime",
-                                               "user_name" : "realtime",
-                                               "user_email" : "realtime@yactraq.com",
-                                               "call_id" : contact_number,
-                                               "agent_name" : u.agentId,
-                                               "start_at" :  time,
-                                               "riskFlag" : "Non-Compliant",
-                                               "total_time" : 0,
-                                               "transcript" : [
-                                                       {
-                                                               "utterance" : u.utterance,
-                                                               "speaker" : speaker,
-                                                               "startTime": 0,//(new Date(u.streamStartTime)).getTime()
-                               "start_at": new Date()
-                                                       }
-                                               ],
-                                               "present_phrases" : present_phrases_occured
-                                       }
-                                //        console.log("Present Phrases",present_phrases_occured.length);
-                                //        console.log("fileData",file_data);
-                                fs.writeFileSync(file_name,JSON.stringify(file_data, null, 2),{flag: "wx"})       
-                                // fs.writeFile(file_name, JSON.stringify(file_data),{flag: "wx"}, function (err) {
-                                //                if (err)  console.error(err);
-                                //                console.log("It's saved!");
-                                //        });
-                               } else {
+                   var file_data = {
+                        "account_id" : "realtime",
+                        "user_name" : "realtime",
+                        "user_email" : "realtime@yactraq.com",
+                        "call_id" : contact_number,
+                        "agent_name" : u.agentId,
+                        "start_at" :  time,
+                        "riskFlag" : "Non-Compliant",
+                        "total_time" : 0,
+                        "transcript" : [
+                                {
+                                        "utterance" : u.utterance,
+                                        "speaker" : speaker,
+                                        "startTime": 0,//(new Date(u.streamStartTime)).getTime()
+                                        "start_at": new Date()
+                                }
+                        ],
+                        "present_phrases" : present_phrases_occured
+                   }
+                  //        console.log("Present Phrases",present_phrases_occured.length);
+                  //        console.log("fileData",file_data);
+                  fs.writeFileSync(file_name,JSON.stringify(file_data, null, 2),{flag: "wx"})       
+                  // fs.writeFile(file_name, JSON.stringify(file_data),{flag: "wx"}, function (err) {
+                  //                if (err)  console.error(err);
+                  //                console.log("It's saved!");
+                  //        });
+                 } 
+                 else {
                    
                 //    fs.readFile(file_name, 'utf8', function readFileCallback(err, obj){
-                        var obj = require(file_name);
+                   var obj = require(file_name);
                  
-                // console.log(obj)
+                   console.log(obj);
+                   console.log(data);
                    console.log(typeof(data))
                    var bb = {}
-                    bb = obj
+                   bb = obj
                    console.log(bb.transcript, typeof(bb))
                    var speaker = (u.speaker == 'Customer') ? 'right': 'left'
                    var startTime = 0;
                    startTime = (new Date().getTime() - new Date(bb.start_at).getTime())/ 1000
                    console.log("startTime : rrrrrrrrrrrrrrrrrrr : "+startTime)
-                   bb.transcript.push({"utterance" : u.utterance, "speaker" : speaker, "startTime": startTime, start_at: new Date()}); //add some data
+                   bb.transcript.push({"utterance" : u.utterance, "speaker" : speaker, "startTime": startTime, start_at: new Date(),}); //add some data
                    if(present_phrases_occured.length > 0) {
                                                bb.present_phrases = bb.present_phrases.concat(present_phrases_occured)
-                                       }
+                   }
                    if(u.status){
                        //console.log("Total Time : ", u.call_metadata.duration)
                        bb.total_time = (new Date().getTime() - new Date(bb.start_at).getTime())/ 1000//(u.call_metadata.duration) ? parseFloat(u.call_metadata.duration) : 0;
                    }
                    console.log("444",bb)
-                                       fs.writeFile(file_name, JSON.stringify(bb,null,2), 'utf8', function (err) {
-                                               if (err) throw err;
-                                               console.log('Saved!');
-                                       });
+                   fs.writeFile(file_name, JSON.stringify(bb,null,2), 'utf8', function (err) {
+                        if (err) throw err;
+                        console.log('Saved!');
+                   });
                    //console.log("sssssssssssssss : ", u.status)
                    var json = JSON.parse(JSON.stringify(bb));
-                   if(u.status){
+                   if(u.status)
+                   {
                         console.log("In side")
                         var index = socketID.indexOf(contact_number);
                         if (index > -1) {
@@ -281,13 +286,18 @@ coretraqEvaluations.processCallUnwind({account_id : json.account_id, call_id : j
                //console.log("## 222: "+t);
            });*/
                           u['list_of_phrases_occured'] =  list_of_phrases_occured;
-                       //console.log(list_of_phrases_occured)
+                       console.log("list_of_phrases_occured",list_of_phrases_occured);
+                       list_of_phrases_occured.sort(function(a, b){return b.length - a.length});
+
                        var new_utterance = u.utterance;
+                       
                        if(list_of_phrases_occured.length > 0){
-                       /*u.utterance.split(" ")*/list_of_phrases_occured.forEach(function(text, t){
+                       /*u.utterance.split(" ")*/
+                //        let count = 0;
+                       list_of_phrases_occured.forEach(function(text, t){
                                //console.log("## 111: "+text);
                        if (u.utterance.includes(text)){
-                               new_utterance = new_utterance.replace(new RegExp("\\b" + text + "\\b"), '<span class="highlightedText_search">$&</span>');
+                               new_utterance = new_utterance.replace(new RegExp("\\b" + text + "\\b"), '<span class="highlightedText_search">$&</span>');    
                        }
                        else{
                                new_utterance = new_utterance;
