@@ -31,7 +31,7 @@ var db = mongoose.connect('mongodb://'+ finalConfig.username + ':' + finalConfig
 });
 */
 
-var server = http.listen(3002, function () {
+var server = http.listen(3002,"localhost", function () {
    
    var host = http.address().address;
    console.log(host);
@@ -89,7 +89,8 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                        var contact_number = (u.contact_number).toString().replace(/[^a-zA-Z0-9]/g, "");
                        
            //console.log("contact_number : "+contact_number)
-                       var file_name = path.join(__dirname,`${u.agentId}_${contact_number}.json`);
+                       
+                       var file_name = path.join(__dirname,`${u.agent_name.split(' ').join('_')}_${u.agentId}_${contact_number}.json`);
                        var list_of_phrases_occured = [];
                        var present_phrases_occured = [];
                        var speaker = (u.speaker == 'Customer') ? 'right' : 'left';
@@ -118,7 +119,7 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                                 socketID.push(contact_number);
                                 var phrases_status = (list_of_phrases_occured.length > 0) ? true : false;
                                 var phrases_count = (list_of_phrases_occured.length > 0) ?  list_of_phrases_occured.length : 0;
-                                contact_JsonArray.push({'agentId':u.agentId,'contact':contact_number, 'phrases_status': phrases_status, 'phrases_count': phrases_count});
+                                contact_JsonArray.push({'agent_name':u.agent_name,'agentId':u.agentId,'contact':contact_number, 'phrases_status': phrases_status, 'phrases_count': phrases_count});
                                 contact_JsonArray.sort(function(a,b){ return b.phrases_count - a.phrases_count; });
                                io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray});
                        }
@@ -173,7 +174,8 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                         "user_name" : "realtime",
                         "user_email" : "realtime@yactraq.com",
                         "call_id" : contact_number,
-                        "agent_name" : u.agentId,
+                        "agent_name" : u.agent_name,
+                        "agentId" : u.agentId,
                         "start_at" :  time,
                         "riskFlag" : "Non-Compliant",
                         "total_time" : 0,
@@ -285,9 +287,10 @@ coretraqEvaluations.processCallUnwind({account_id : json.account_id, call_id : j
                }
                //console.log("## 222: "+t);
            });*/
-                          u['list_of_phrases_occured'] =  list_of_phrases_occured;
-                       console.log("list_of_phrases_occured",list_of_phrases_occured);
                        list_of_phrases_occured.sort(function(a, b){return b.length - a.length});
+                       u['list_of_phrases_occured'] =  list_of_phrases_occured;
+                       console.log("list_of_phrases_occured",list_of_phrases_occured);
+                       
 
                        var new_utterance = u.utterance;
                        

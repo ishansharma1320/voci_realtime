@@ -385,7 +385,7 @@ body {
 #frame #sidepanel #contacts ul li.contact .wrap span {
     position: absolute;
     right: 0;
-    margin: -29px 20px 0px 0px;
+    margin: -33px 20px 0px 0px;
     font-weight: bold;
     font-size: 13pt;
     color: #a8ada9;
@@ -422,10 +422,12 @@ body {
   font-weight: 500;
 }
 #frame #sidepanel #contacts ul li.contact .wrap .meta .preview {
-  margin: 5px 0 0 0;
+  /* margin: 5px 0 0 0; */
   padding: 0 0 1px;
   font-weight: 400;
   white-space: nowrap;
+  font-size: 0.875em;
+  color: #cacfcb;
   overflow: hidden;
   text-overflow: ellipsis;
   -moz-transition: 1s all ease;
