@@ -52,6 +52,7 @@
                 }
 
                 var list_Of_contacts = data.list_Of_contacts;
+                let fetchRequired = data.fetchRequired;
                 var list =  data.list_Of_contacts.filter(function (el) {
 					  return el != null;
 					});//.stream;//['Stream1', 'Stream2'];
@@ -68,9 +69,16 @@
                 for (i = 0; i < list.length; i++) {
                     if(list[i]){
                         console.log(list[i]);
+                        
+                       
                         var agentName = list[i].agent_name;
                         var agentId = list[i].agentId; 
                         var name = list[i].contact;
+                        if(fetchRequired === true){
+                        var oReq = new XMLHttpRequest();
+                        oReq.open("GET", "http://127.0.0.1:3002/"+name);
+                        oReq.send();
+                }
                         var ids = "'id_"+list[i].contact+"'";
                         var a_id = "'a_id_"+list[i].contact+"'";
                         var div_id = "'div_id_"+list[i].contact+"'";

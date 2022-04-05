@@ -22,6 +22,7 @@ var db = mongoose.connect('mongodb://'+ finalConfig.username + ':' + finalConfig
 });
 
  var  fs = require('fs');
+const { result } = require('underscore');
   // index = fs.readFileSync(__dirname + '/index_b3.html');
 
 /*var app = http.createServer(function(req, res) {
@@ -50,7 +51,86 @@ app.get('/', function(req, res){
      res.sendFile(__dirname +'/index_final.html', {root: publicPath});
 });
 
+app.get('/:socketID', function (req, res) {
+        console.log(req.params.socketID);
+        let agentName,agentId;
+        console.log(contact_JsonArray);
+        for(let element of contact_JsonArray){
+                if(element.contact == req.params.socketID){
+                        console.log("here");
+                        agentName = element.agent_name;
+                        agentId = element.agentId;
+                        break;
+                }
+        }
+        console.log(agentName,agentId);
+        if(agentName !== undefined && agentId !== undefined ){
+                let fileName = path.join(__dirname,`${agentName.split(' ').join('_')}_${agentId}_${req.params.socketID}.json`);
+                try{
+                        let data = require(fileName);
+                        console.log(Object.keys(data));
+                        let transcript = data.transcript.map(value => 
+                                {
+                                return {utterance: value.utterance,speaker:value.speaker === 'right'?'Customer':'Agent'};
+                        });
+                        let pr_phrases = data.present_phrases.map(value => value.phrase);
+                        
+                        for(let utterance of transcript){
+                                let phrases_found = [];
+                                for(let phrase of pr_phrases){
+                                        // console.log("utterance: ",utterance.utterance);
+                                        // console.log("phrase: ",phrase)
+                                        if(utterance.utterance.includes(phrase) && utterance.speaker === 'Customer'){
+                                                // console.log("here");
+                                                phrases_found.push(phrase);
+                                        }
+                                }
+                                phrases_found.sort(function(a, b){return b.length - a.length});
+                                let result = {};
+                                result['list_of_phrases_occured'] =  phrases_found;
+                                console.log("phrases_found",phrases_found);
+                                
+         
+                                var new_utterance = utterance.utterance;
+                                
+                                if(phrases_found.length > 0){
+                                /*u.utterance.split(" ")*/
+                         //        let count = 0;
+                                 phrases_found.forEach(function(text, t){
+                                        //console.log("## 111: "+text);
+                                if (utterance.utterance.includes(text)){
+                                        new_utterance = new_utterance.replace(new RegExp("\\b" + text + "\\b"), '<span class="highlightedText_search">$&</span>');    
+                                }
+                                else{
+                                        new_utterance = new_utterance;
+                                }
+                                /*      if(list_of_phrases_occured.includes(text)){
+                                                new_utterance = new_utterance + ' <span class="highlightedText_search">'+text+'</span>';
+                                        }else{
+                                                new_utterance = new_utterance + ' '+text;
+                                        }
+                                */      //console.log("## 222: "+t);
+                                });
+                                }
+                                else{
+                                        new_utterance = new_utterance;
+                                }
+                                
+                                result.contact_number = req.params.socketID;
+                                result.speaker = utterance.speaker;
+                                result.new_utterance = new_utterance
+                       
+                                io.emit('datavalues', result);
+                        }
 
+                }catch(err){
+                        console.error(err);
+                        res.end();
+                        return;
+                }
+        }
+        res.end();
+});
 var coretraqEvaluations = require('./CoretraqEvaluation.js').CoretraqEvaluation
 var io = require('socket.io').listen(server);
 //console.log(io)
@@ -75,10 +155,10 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
        io.on('connection', function(socket) {
        //console.log("socketID : "+socket);
 //		console.log(contact_JsonArray);		
-       io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray});
+       io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray,fetchRequired: true});
 //console.log(req, res)		
                socket.on('data', function(data){
-                // console.log(data);
+               
                 
                    //--console.log("data : "+JSON.stringify(data));
            setTimeout(function(){ processData(data);}, 700);
@@ -121,13 +201,13 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                                 var phrases_count = (list_of_phrases_occured.length > 0) ?  list_of_phrases_occured.length : 0;
                                 contact_JsonArray.push({'agent_name':u.agent_name,'agentId':u.agentId,'contact':contact_number, 'phrases_status': phrases_status, 'phrases_count': phrases_count});
                                 contact_JsonArray.sort(function(a,b){ return b.phrases_count - a.phrases_count; });
-                               io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray});
+                               io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray,fetchRequired: false});
                        }
                        else if(u.status == false && socketID.includes(contact_number)){
                                 setPhraseStatus(contact_number, contact_JsonArray, list_of_phrases_occured.length);
                                 contact_JsonArray.sort(function(a,b){ return b.phrases_count - a.phrases_count; });
                                 //console.log("contact_JsonArray : "+JSON.stringify(contact_JsonArray))				
-                                io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray});	
+                                io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray,fetchRequired: false});	
                         }
 
            function setPhraseStatus(contact_number, contact_JsonArray, size) {
@@ -243,7 +323,7 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                        delete contact_JsonArray[jsonArrayIndex];
                        //console.log("socketID : "+socketID)
                        io.emit('removeID', {contact : contact_number})
-                       io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray});
+                       io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray,fetchRequired: false});
                                                
                                                //MongoClient.connect(url, { useNewUrlParser:true,useUnifiedTopology: true }, function(err, db) {
                                                //        if (err) throw err;
