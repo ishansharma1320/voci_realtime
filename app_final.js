@@ -22,7 +22,7 @@ var db = mongoose.connect('mongodb://'+ finalConfig.username + ':' + finalConfig
 });
 
  var  fs = require('fs');
-const { result } = require('underscore');
+
   // index = fs.readFileSync(__dirname + '/index_b3.html');
 
 /*var app = http.createServer(function(req, res) {
@@ -32,7 +32,7 @@ const { result } = require('underscore');
 });
 */
 
-var server = http.listen(3002,"localhost", function () {
+var server = http.listen(3002, function () {
    
    var host = http.address().address;
    console.log(host);
@@ -199,9 +199,10 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                                 socketID.push(contact_number);
                                 var phrases_status = (list_of_phrases_occured.length > 0) ? true : false;
                                 var phrases_count = (list_of_phrases_occured.length > 0) ?  list_of_phrases_occured.length : 0;
-                                contact_JsonArray.push({'agent_name':u.agent_name,'agentId':u.agentId,'contact':contact_number, 'phrases_status': phrases_status, 'phrases_count': phrases_count});
+                                contact_JsonArray.push({'agentSlackDMUrl':u.slackDMUrl,'agent_name':u.agent_name,'agentId':u.agentId,'contact':contact_number, 'phrases_status': phrases_status, 'phrases_count': phrases_count});
                                 contact_JsonArray.sort(function(a,b){ return b.phrases_count - a.phrases_count; });
-                               io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray,fetchRequired: false});
+                                io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray,fetchRequired: false});
+                                                               
                        }
                        else if(u.status == false && socketID.includes(contact_number)){
                                 setPhraseStatus(contact_number, contact_JsonArray, list_of_phrases_occured.length);
@@ -255,6 +256,7 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                         "user_email" : "realtime@yactraq.com",
                         "call_id" : contact_number,
                         "agent_name" : u.agent_name,
+                        "agentEmail": u.agentEmail,
                         "agentId" : u.agentId,
                         "start_at" :  time,
                         "riskFlag" : "Non-Compliant",
@@ -322,6 +324,7 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                                                //contact_JsonArray.splice(jsonArrayIndex,1);
                        delete contact_JsonArray[jsonArrayIndex];
                        //console.log("socketID : "+socketID)
+                       socket.emit('removeSlackURL',{agentEmail: u.agentEmail});
                        io.emit('removeID', {contact : contact_number})
                        io.emit('streamArray', {stream : socketID, list_Of_contacts: contact_JsonArray,fetchRequired: false});
                                                

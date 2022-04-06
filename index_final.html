@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="css/style-uop_b4.css">
 <link rel="stylesheet" href="css/circle.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src='http://127.0.0.1:3002/socket.io/socket.io.js'></script>
+        <script src='http://13.127.219.224:3002/socket.io/socket.io.js'></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <link rel="stylesheet" href="css/style.css">
@@ -72,11 +72,12 @@
                         
                        
                         var agentName = list[i].agent_name;
+                        var slackDMUrl = list[i].agentSlackDMUrl;
                         var agentId = list[i].agentId; 
                         var name = list[i].contact;
                         if(fetchRequired === true){
                         var oReq = new XMLHttpRequest();
-                        oReq.open("GET", "http://127.0.0.1:3002/"+name);
+                        oReq.open("GET", "http://13.127.219.224:3002/"+name);
                         oReq.send();
                 }
                         var ids = "'id_"+list[i].contact+"'";
@@ -94,10 +95,10 @@
                         var width = (list[i].phrases_count / list[0].phrases_count) * 100;
                         //console.log("width : "+width)
                         if(phrase_status.phrases_status == true){
-				$("#sidenav").append('<li class="contact" id='+div_id+' class="div_username" onclick="show('+ids+');"><div class="wrap"><i class="fa fa-flag" style="color: red; font-size: 18px;" aria-hidden="true"></i><div class="meta" id='+a_id+' class="username"><p class="name">'+ agentName +'</p><p class="preview">'+agentId+'</p></div><span> '+phrase_status.phrases_count+' </span></div></li>')
+				$("#sidenav").append('<li class="contact" id='+div_id+' class="div_username" onclick="show('+ids+');"><div class="wrap"><i class="fa fa-flag" style="color: red; font-size: 18px;" aria-hidden="true"></i><div class="meta" id='+a_id+' class="username"><p class="name">'+ agentName + `<a href=${slackDMUrl} class="fa fa-comment slack-url" target="_blank" aria-hidden="true"></a>`+'</p><p class="preview">'+agentId+'</p></div><span> '+phrase_status.phrases_count+' </span></div></li>')
                                 //$("div#sidenav").append('<div class="w3-light-grey" id='+div_id+' class="div_username"><a href="#" id='+a_id+' class="username" onclick="show('+ids+');"><span style="color: red;">&#9873;</span>  '+ name +' <span class="step">'+phrase_status.phrases_count+'</span> </a> <div class="w3-green" style="height:5px; width: '+width+'%"></div><div>');
                         }else{
-				$("#sidenav").append('<li class="contact" id='+div_id+' class="div_username" onclick="show('+ids+');"><div class="wrap"><i class="fa" aria-hidden="true"></i><div class="meta" id='+a_id+' class="username"><p class="name">'+ agentName +'</p><p class="preview">'+agentId+'</p></div><span> '+phrase_status.phrases_count+' </span></div></li>')
+				$("#sidenav").append('<li class="contact" id='+div_id+' class="div_username" onclick="show('+ids+');"><div class="wrap"><i class="fa" aria-hidden="true"></i><div class="meta" id='+a_id+' class="username"><p class="name">'+ agentName +`<a href=${slackDMUrl} class="fa fa-comment slack-url" target="_blank" aria-hidden="true"></a>`+'</p><p class="preview">'+agentId+'</p></div><span> '+phrase_status.phrases_count+' </span></div></li>')
                                 //$("div#sidenav").append('<div class="w3-light-grey" id='+div_id+' class="div_username"><a href="#" id='+a_id+' class="username" onclick="show('+ids+');">'+ name +'<span class="step">'+phrase_status.phrases_count+'</span></a> <div class="w3-green" style="height:5px; width: '+width+'%"></div><div>');
                         }
                         //$("#sidenav").append('<li class="contact" id='+div_id+' class="div_username"><div class="wrap"><i class="fa fa-flag" style="color: red" aria-hidden="true"></i><div class="meta" id='+a_id+' class="username" onclick="show('+ids+');"><p class="name">'+ name +'</p><p class="preview"></p></div><span> '+phrase_status.phrases_count+' </span></div></li>')

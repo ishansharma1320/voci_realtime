@@ -385,10 +385,15 @@ body {
 #frame #sidepanel #contacts ul li.contact .wrap span {
     position: absolute;
     right: 0;
-    margin: -33px 20px 0px 0px;
+    margin: -35px 20px 0px 0px;
     font-weight: bold;
     font-size: 13pt;
     color: #a8ada9;
+}
+.slack-url {
+  text-decoration: none;
+  margin-left: 0.5em;
+  font-size: 1.25em;
 }
 #frame #sidepanel #contacts ul li.contact .wrap span.online {
   background: #2ecc71;

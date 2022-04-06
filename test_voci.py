@@ -117,6 +117,7 @@ example_content={
   'X-STT-ID': '6a56e6cfa3d3bf694be4dd0931bf8443@0.0.0.0',
   'gender': "",
   'agentId': '3868807',
+  'agentEmail': 'ishansharma1320@gmail.com',
   'localparty': '+18554344553',
   'contact_number': '+18554344554',
   'sentiment': "",
@@ -177,7 +178,7 @@ if __name__ == '__main__':
   # processSampleScript(transcript)
   if len(sys.argv)>1 and sys.argv[1] == "stop":
     example_content['type'] = "stop"
-    send('http://127.0.0.1:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', example_content)
+    send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', example_content)
   else:
     d = []
     for i in range(len(transcript)):
@@ -195,7 +196,7 @@ if __name__ == '__main__':
         cus_content['isFinal'] = False
         print(cus_content)
         d.append({"native": example_content,"generated": cus_content})
-        send('http://127.0.0.1:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
+        send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
         agt_content = example_content.copy()
         agt_content['speaker'] = "Agent"
         agentObj = sc.get("Agent",{})
@@ -209,7 +210,7 @@ if __name__ == '__main__':
         else:
           agt_content['isFinal'] = False
         d.append({"native": example_content,"generated": agt_content})
-        send('http://127.0.0.1:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
+        send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
       elif order == 'ac':
         agt_content = example_content.copy()
         agt_content['speaker'] = "Agent"
@@ -219,7 +220,7 @@ if __name__ == '__main__':
         agt_content['messageStartTime'] = agentObj.get('start_time',0.00)
         agt_content['messageEndTime'] = agentObj.get('end_time',1.00)
         d.append({"native": example_content,"generated": agt_content})
-        send('http://127.0.0.1:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
+        send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
         cus_content = example_content.copy()
         cus_content['speaker'] = "Customer"
         customerObj = sc.get("Customer",{})
@@ -233,5 +234,5 @@ if __name__ == '__main__':
         else:
           cus_content['isFinal'] = False
         d.append({"native": example_content,"generated": cus_content})
-        send('http://127.0.0.1:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
+        send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
   
