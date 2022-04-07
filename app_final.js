@@ -9,7 +9,7 @@ var async = require('async');
 //var http = require('http'),
 const config = require('./config/development');
 const finalConfig = config.development;
-
+const xregexp = require('xregexp');
 var db = mongoose.connect('mongodb://'+ finalConfig.username + ':' + finalConfig.password + '@' + finalConfig.host + '/' + finalConfig.db,{
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -99,7 +99,7 @@ app.get('/:socketID', function (req, res) {
                                  phrases_found.forEach(function(text, t){
                                         //console.log("## 111: "+text);
                                 if (utterance.utterance.includes(text)){
-                                        new_utterance = new_utterance.replace(new RegExp("\\b" + text + "\\b"), '<span class="highlightedText_search">$&</span>');    
+                                        new_utterance = new_utterance.replace(new xregexp(text), '<span class="highlightedText_search">$&</span>');    
                                 }
                                 else{
                                         new_utterance = new_utterance;
@@ -176,8 +176,12 @@ fs.readFile('./ref_phrases.json', 'utf8', function readFileCallback(err, gen_phr
                        var speaker = (u.speaker == 'Customer') ? 'right' : 'left';
            //var gen_phrases_data = (u.speaker == 'Customer') ? gen_phrases_customer : gen_phrases_agent;
                        JSON.parse(gen_phrases_data).data.map(function(dd_data){
-                               if(new RegExp("\\b" + dd_data.phrases + "\\b").test(u.utterance) && u.speaker == 'Customer' && dd_data.speaker == 'right'){ //dd_data.speaker){
-                              
+                        //        console.log(dd_data.phrases);
+                        //        console.log(u.utterance);
+                        //        process.exit(1);
+                                if(xregexp(dd_data.phrases).test(u.utterance) && u.speaker == 'Customer' && dd_data.speaker == 'right'){ //dd_data.speaker){
+                                        console.log(u.utterance);
+                                        // process.exit(1);
                                        list_of_phrases_occured.push(dd_data.phrases);
                                        var s_time =  (new Date(u.streamStartTime)).getTime()
                                        present_phrases_occured.push({
@@ -383,7 +387,7 @@ coretraqEvaluations.processCallUnwind({account_id : json.account_id, call_id : j
                        list_of_phrases_occured.forEach(function(text, t){
                                //console.log("## 111: "+text);
                        if (u.utterance.includes(text)){
-                               new_utterance = new_utterance.replace(new RegExp("\\b" + text + "\\b"), '<span class="highlightedText_search">$&</span>');    
+                               new_utterance = new_utterance.replace(new xregexp(text), '<span class="highlightedText_search">$&</span>');    
                        }
                        else{
                                new_utterance = new_utterance;

@@ -4,9 +4,112 @@ from urllib.parse import urlparse
 import http.client as httplib
 import json
 from datetime import datetime, date
-import sys
+import argparse
 dt=datetime.fromtimestamp(1635140783).isoformat()
 print(dt)
+transcript_hindi = [
+    {
+     "order": "ca",
+     "Customer": {
+         "start_time":60.56,
+         "end_time":62.45,
+         "text":"नमस्ते, क्या यह पहला राष्ट्रीय बैंक है?"
+         }, 
+     "Agent": 
+         {
+        "start_time":63.15,
+        "end_time":64.50,
+         "text":"नमस्ते, मेरा नाम बॉब है, मैं आपकी कैसे मदद कर सकता हूं?"
+         }
+     },
+    {
+     "order": "ca",
+     "Customer": {
+         "start_time":65.05,
+         "end_time":68.10,
+         "text":"मैं आपके क्रेडिट कार्ड का उपयोग करके भुगतान करने का प्रयास कर रहा हूं लेकिन किसी तरह इसे ठीक से संसाधित नहीं किया जा रहा है। राशि काट ली गई है, हालांकि एक्सवाईजेड वेबसाइट पर लेनदेन विफल हो गया है।"
+         }, 
+     "Agent": 
+         {
+        "start_time":68.20,
+        "end_time":69.10,
+         "text": "कृपया तब तक प्रतीक्षा करें जब तक मुझे आपके हाल के लेनदेन नहीं मिल जाते।"
+         }
+     },
+    {
+     "order": "ca",
+     "Customer": {
+         "start_time":69.20,
+         "end_time":69.35,
+         "text":"ज़रूर, मैं इंतज़ार करूँगा"
+         }, 
+     "Agent": 
+         {
+        "start_time":69.40,
+        "end_time":69.50,
+         "text": "धन्यवाद।"
+         }
+     },
+    {
+     "order": "ac",
+     "Customer": {
+         "start_time":72.25,
+         "end_time":73.50,
+         "text":"हां, यही वह है, मैं जानना चाहता था, मैं कब पैसे वापस जमा होने की उम्मीद कर सकता हूं?"
+         }, 
+     "Agent": 
+         {
+        "start_time":70.00,
+        "end_time":72.15,
+         "text": "प्रतीक्षा करने के लिए धन्यवाद, मैं देख पा रहा हूँ कि आपने XYZ Co. Ltd. पर मंगलवार, 22 मार्च, 4:41 बजे लेन-देन का प्रयास किया। क्या यह वह लेनदेन है जिसका आप उल्लेख कर रहे हैं?"
+         }
+     },
+    {
+     "order": "ac",
+     "Customer": {
+         "start_time":74.55,
+         "end_time":75.10,
+         "text":"धन्यवाद, मैं बस इतना ही जानना चाहता था।"
+         }, 
+     "Agent": 
+         {
+        "start_time":74.00,
+        "end_time":75.45,
+         "text": "यह आमतौर पर विक्रेता पर निर्भर करता है, लेकिन औसतन, आपको 2-3 व्यावसायिक दिनों के भीतर अपने खाते में जमा की गई राशि दिखाई देनी चाहिए।"
+         }
+     },
+        {
+         "order": "ac",
+         "Customer": {
+             "start_time":76.54,
+             "end_time":77.23,
+             "text":"नहीं, मैंने अपनी शंका का समाधान कर लिया है, धन्यवाद"
+             }, 
+         "Agent": 
+             {
+            "start_time":75.58,
+            "end_time":76.42,
+             "text": "क्या कोई और चीज है जिसमें मैं आज आपकी मदद कर सकता हूं?"
+             }
+         },
+    {
+     "order": "ac",
+     "Customer": {
+         "start_time":78.12,
+         "end_time":78.36,
+         "text":"धन्यवाद, आपको भी।"
+         }, 
+     "Agent": 
+         {
+        "start_time":77.02,
+        "end_time":77.58,
+         "text": "बढ़िया, आपके समय के लिए धन्यवाद और आपका दिन मंगलमय हो।"
+         }
+     }
+    
+    
+    ]
+
 transcript = [
     {
      "order": "ca",
@@ -173,66 +276,77 @@ def send(url, apiToken, content):
 # send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', example_content2)
 
 # def processSampleScript(script):
+def exec(transcript):
+  d = []
+  for i in range(len(transcript)):
+    sc = transcript[i]
+    # print(sc)
+    order = sc.get('order','')
+    if order == 'ca':
+      cus_content = example_content.copy()
+      cus_content['speaker'] = "Customer"
+      customerObj = sc.get("Customer",{})
+      cus_content['text'] = customerObj.get('text','')
+      cus_content['utterance'] = customerObj.get('text','')
+      cus_content['messageStartTime'] = customerObj.get('start_time',0.00)
+      cus_content['messageEndTime'] = customerObj.get('end_time',1.00)
+      cus_content['isFinal'] = False
+      print(cus_content)
+      d.append({"native": example_content,"generated": cus_content})
+      send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
+      agt_content = example_content.copy()
+      agt_content['speaker'] = "Agent"
+      agentObj = sc.get("Agent",{})
+      agt_content['text'] = agentObj.get('text','')
+      agt_content['utterance'] = agentObj.get('text','')
+      agt_content['messageStartTime'] = agentObj.get('start_time',0.00)
+      agt_content['messageEndTime'] = agentObj.get('end_time',1.00)
+      if i == len(transcript)-1:
+        agt_content['isFinal'] = True
+        # agt_content['type'] = "stop"
+      else:
+        agt_content['isFinal'] = False
+      d.append({"native": example_content,"generated": agt_content})
+      send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
+    elif order == 'ac':
+      agt_content = example_content.copy()
+      agt_content['speaker'] = "Agent"
+      agentObj = sc.get("Agent",{})
+      agt_content['text'] = agentObj.get('text','')
+      agt_content['utterance'] = agentObj.get('text','')
+      agt_content['messageStartTime'] = agentObj.get('start_time',0.00)
+      agt_content['messageEndTime'] = agentObj.get('end_time',1.00)
+      d.append({"native": example_content,"generated": agt_content})
+      send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
+      cus_content = example_content.copy()
+      cus_content['speaker'] = "Customer"
+      customerObj = sc.get("Customer",{})
+      cus_content['text'] = customerObj.get('text','')
+      cus_content['utterance'] = customerObj.get('text','')
+      cus_content['messageStartTime'] = customerObj.get('start_time',0.00)
+      cus_content['messageEndTime'] = customerObj.get('end_time',1.00)
+      if i == len(transcript)-1:
+        cus_content['isFinal'] = True
+        # cus_content['type']= "stop"
+      else:
+        cus_content['isFinal'] = False
+      d.append({"native": example_content,"generated": cus_content})
+      send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
   
+
 if __name__ == '__main__':
   # processSampleScript(transcript)
-  if len(sys.argv)>1 and sys.argv[1] == "stop":
+  my_parser = argparse.ArgumentParser()
+  my_parser.add_argument('--lang', action='store', type=str, required=True)
+  my_parser.add_argument('--stop', action='store', type=str)
+  args = my_parser.parse_args()
+
+  if args.stop == "stop":
     example_content['type'] = "stop"
     send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', example_content)
   else:
-    d = []
-    for i in range(len(transcript)):
-      sc = transcript[i]
-      # print(sc)
-      order = sc.get('order','')
-      if order == 'ca':
-        cus_content = example_content.copy()
-        cus_content['speaker'] = "Customer"
-        customerObj = sc.get("Customer",{})
-        cus_content['text'] = customerObj.get('text','')
-        cus_content['utterance'] = customerObj.get('text','')
-        cus_content['messageStartTime'] = customerObj.get('start_time',0.00)
-        cus_content['messageEndTime'] = customerObj.get('end_time',1.00)
-        cus_content['isFinal'] = False
-        print(cus_content)
-        d.append({"native": example_content,"generated": cus_content})
-        send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
-        agt_content = example_content.copy()
-        agt_content['speaker'] = "Agent"
-        agentObj = sc.get("Agent",{})
-        agt_content['text'] = agentObj.get('text','')
-        agt_content['utterance'] = agentObj.get('text','')
-        agt_content['messageStartTime'] = agentObj.get('start_time',0.00)
-        agt_content['messageEndTime'] = agentObj.get('end_time',1.00)
-        if i == len(transcript)-1:
-          agt_content['isFinal'] = True
-          # agt_content['type'] = "stop"
-        else:
-          agt_content['isFinal'] = False
-        d.append({"native": example_content,"generated": agt_content})
-        send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
-      elif order == 'ac':
-        agt_content = example_content.copy()
-        agt_content['speaker'] = "Agent"
-        agentObj = sc.get("Agent",{})
-        agt_content['text'] = agentObj.get('text','')
-        agt_content['utterance'] = agentObj.get('text','')
-        agt_content['messageStartTime'] = agentObj.get('start_time',0.00)
-        agt_content['messageEndTime'] = agentObj.get('end_time',1.00)
-        d.append({"native": example_content,"generated": agt_content})
-        send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', agt_content)
-        cus_content = example_content.copy()
-        cus_content['speaker'] = "Customer"
-        customerObj = sc.get("Customer",{})
-        cus_content['text'] = customerObj.get('text','')
-        cus_content['utterance'] = customerObj.get('text','')
-        cus_content['messageStartTime'] = customerObj.get('start_time',0.00)
-        cus_content['messageEndTime'] = customerObj.get('end_time',1.00)
-        if i == len(transcript)-1:
-          cus_content['isFinal'] = True
-          # cus_content['type']= "stop"
-        else:
-          cus_content['isFinal'] = False
-        d.append({"native": example_content,"generated": cus_content})
-        send('http://13.127.219.224:3003/transcriptstream', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2NvdW50X2lkIjoiY29udGFxdCI', cus_content)
-  
+    if args.lang == 'hindi':
+      exec(transcript_hindi)
+    else:
+      exec(transcript)
+    
